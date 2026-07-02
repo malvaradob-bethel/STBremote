@@ -2,7 +2,7 @@
   "name": "Bethel STB Remote",
   "short_name": "STB Remote",
   "description": "Control remoto IR para decodificadores Aimsat, Digitalcom y Newland",
-  "start_url": "./",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
