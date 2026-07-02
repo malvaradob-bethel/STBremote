@@ -1,0 +1,13 @@
+<!-- ============================================================
+     AGREGAR a android/app/src/main/AndroidManifest.xml
+     ============================================================ -->
+
+<!-- 1) Permiso de transmision IR. Va DENTRO de <manifest>, antes de <application>. -->
+<uses-permission android:name="android.permission.TRANSMIT_IR" />
+
+<!-- 2) Declara el hardware IR. required="false" para que la app instale
+        igual en moviles sin blaster (se valida en runtime con hasIrEmitter).
+        Si TODOS tus equipos tienen IR y quieres bloquear el resto, pon "true". -->
+<uses-feature
+    android:name="android.hardware.consumerir"
+    android:required="false" />
