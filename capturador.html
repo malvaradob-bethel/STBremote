@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capturador IR · Bethel</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a1f; --panel2:#1d2127; --line:#2a2f37;
+    --txt:#e8eaed; --dim:#9aa0a6; --accent:#3a9ee6; --ok:#2ec26a; --warn:#e3b505; --raw:#c77dff;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--txt); font-family:"Segoe UI",system-ui,Arial,sans-serif; font-size:14px;}
+  header{position:sticky; top:0; background:var(--panel); border-bottom:1px solid var(--line); padding:12px 16px; z-index:5;}
+  h1{font-size:16px; margin:0 0 10px; letter-spacing:.5px;}
+  .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+  .tabs{display:flex; gap:6px;}
+  .tab{background:#13161a; border:1px solid var(--line); color:var(--dim); padding:7px 14px; border-radius:8px; cursor:pointer; font:600 13px/1 inherit;}
+  .tab.on{background:var(--panel2); color:#fff; border-color:#3b4250;}
+  button.act{background:var(--accent); border:none; color:#fff; padding:8px 14px; border-radius:8px; cursor:pointer; font:600 13px/1 inherit;}
+  button.act.ghost{background:transparent; border:1px solid var(--line); color:var(--txt);}
+  button.act:disabled{opacity:.4; cursor:default;}
+  .dot{width:10px; height:10px; border-radius:50%; background:#666; display:inline-block;}
+  .dot.ok{background:var(--ok);} .dot.no{background:#d33;}
+  .prog{margin-left:auto; font-variant-numeric:tabular-nums; color:var(--dim);}
+  .prog b{color:#fff;}
+
+  main{padding:14px 16px 80px; max-width:680px; margin:0 auto;}
+  .hint{color:var(--dim); margin:0 0 12px; line-height:1.45;}
+  .warn{background:#3a2e00; border:1px solid var(--warn); color:#ffe79a; padding:10px 12px; border-radius:8px; margin-bottom:12px;}
+
+  .btnrow{display:grid; grid-template-columns:1fr auto auto; gap:10px; align-items:center;
+    background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-bottom:7px; cursor:pointer;}
+  .btnrow.active{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent);}
+  .btnrow.done{background:var(--panel2);}
+  .lbl{font-weight:600;}
+  .lbl small{display:block; color:var(--dim); font-weight:400; font-size:11px; letter-spacing:.3px;}
+  .val{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12px; color:var(--ok); text-align:right; min-width:120px;}
+  .val.raw{color:var(--raw);} .val.pend{color:var(--dim);}
+  .mini{background:transparent; border:1px solid var(--line); color:var(--dim); border-radius:6px; padding:5px 9px; cursor:pointer; font-size:12px;}
+
+  .log{margin-top:18px;}
+  .log summary{cursor:pointer; color:var(--dim);}
+  .log pre{background:#0a0c0f; border:1px solid var(--line); border-radius:8px; padding:10px; height:140px; overflow:auto; font-size:11px; color:#8fae8f; margin-top:8px;}
+  .footbar{position:fixed; left:0; right:0; bottom:0; background:var(--panel); border-top:1px solid var(--line); padding:10px 16px; display:flex; gap:10px; justify-content:center;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Capturador IR · Bethel</h1>
+  <div class="row">
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-marca="aimsat">Aimsat</button>
+      <button class="tab" data-marca="digitalcom">Digitalcom</button>
+      <button class="tab" data-marca="newland">Newland</button>
+    </div>
+    <span class="dot no" id="dot"></span>
+    <span id="conn-status" style="color:var(--dim)">Sin conectar</span>
+    <span class="prog" id="prog"><b>0</b>/0 capturados</span>
+  </div>
+</header>
+
+<main>
+  <div id="nowebserial" class="warn" style="display:none">
+    Este navegador no soporta <b>Web Serial</b>. Usa <b>Chrome o Edge de escritorio</b>
+    (no funciona en Firefox, Safari ni en Android). El Arduino va conectado por USB a esta PC.
+  </div>
+
+  <p class="hint">
+    1) Conecta el Arduino (sketch <code>captura_ir_serial.ino</code>, pin 11) y pulsa <b>Conectar</b>.<br>
+    2) Toca un botón de la lista para activarlo (o deja el siguiente pendiente).<br>
+    3) Apunta el control original al receptor y presiona esa tecla <b>una vez</b>.<br>
+    El valor se asigna solo y avanza al siguiente. Al terminar, <b>Exportar JSON</b>.
+  </p>
+
+  <label class="hint" style="display:block">
+    <input type="checkbox" id="autoadv" checked> Avanzar automáticamente al siguiente pendiente
+  </label>
+
+  <div id="list"></div>
+
+  <details class="log">
+    <summary>Registro serial (depuración)</summary>
+    <pre id="logbox"></pre>
+  </details>
+</main>
+
+<div class="footbar">
+  <button class="act" id="btn-connect">Conectar Arduino</button>
+  <button class="act ghost" id="btn-import">Importar JSON</button>
+  <button class="act" id="btn-export">Exportar JSON</button>
+  <button class="act ghost" id="btn-reset">Reiniciar modelo</button>
+  <input type="file" id="file" accept=".json" style="display:none">
+</div>
+
+<script>
+/* ====== Listas de botones por modelo (orden de captura + etiqueta impresa) ====== */
+const MODELOS = {
+  aimsat: [
+    ['POWER','Power'],['MUTE','Mute'],
+    ['PLAYER','Player (rojo)'],['V_FORMAT','V-Format (verde)'],['ASPECT','Aspect (amarillo)'],['TIMER','Timer (azul)'],
+    ['SUB','Sub'],['INFO','Info'],['AUDIO','Audio'],['TTX','Teltext'],
+    ['PLAY','Play'],['STOP','Stop'],['PAUSE','Pause'],['REC','Rec'],
+    ['PREV','Anterior |◀◀'],['NEXT','Siguiente ▶▶|'],['REW','Retro ◀◀'],['FFWD','Avance ▶▶'],
+    ['GOTO','Goto'],['FAV','Fav'],
+    ['UP','Arriba ▲'],['LEFT','Izquierda ◀'],['OK','OK'],['RIGHT','Derecha ▶'],['DOWN','Abajo ▼'],
+    ['MENU','Menu'],['EXIT','Exit'],
+    ['VOL_UP','Vol +'],['VOL_DOWN','Vol −'],['EPG','EPG'],['TV_RADIO','TV/Radio'],['PAGE_UP','Page ▲'],['PAGE_DOWN','Page ▼'],
+    ['1','1'],['2','2'],['3','3'],['4','4'],['5','5'],['6','6'],['7','7'],['8','8'],['9','9'],
+    ['ZOOM','Zoom'],['0','0'],['RECALL','Recall']
+  ],
+  digitalcom: [
+    ['POWER','Power'],['MUTE','Mute'],
+    ['RED','Color rojo'],['GREEN','Color verde'],['YELLOW','Color amarillo'],['BLUE','Color azul'],
+    ['SUB','Subt'],['TTX','TTX'],['ZOOM','Zoom'],['PVR','PVR'],
+    ['FIND','Find'],['SLEEP','Sleep'],['GOTO','Goto'],['RECALL','Recall'],
+    ['PLAY','Play'],['PAUSE','Pause'],['STOP','Stop'],['REC','Rec'],
+    ['MENU','Menu'],['EXIT','Exit'],
+    ['UP','Arriba ▲'],['LEFT','Izquierda ◀'],['OK','OK'],['RIGHT','Derecha ▶'],['DOWN','Abajo ▼'],
+    ['EPG','EPG'],['INFO','Info'],
+    ['REW','Retro ◀◀'],['FFWD','Avance ▶▶'],['TV_RADIO','TV/RA'],['SAT','Sat'],['PREV','Anterior |◀◀'],['NEXT','Siguiente ▶▶|'],
+    ['1','1'],['2','2'],['3','3'],['4','4'],['5','5'],['6','6'],['7','7'],['8','8'],['9','9'],
+    ['FAV','Fav'],['0','0'],['AUDIO','Audio']
+  ],
+  newland: [
+    ['POWER','Power'],
+    ['TOP_1','Símbolo 1 (verificar ⟲)'],['TOP_2','Símbolo 2 (verificar ▤)'],['MUTE','Mute'],
+    ['TRACK','Track'],['SUB','Sub-T'],['TTX','TTX'],
+    ['F1','F1 (rojo)'],['F2','F2 (verde)'],['F3','F3 (amarillo)'],['SET','Set (azul)'],
+    ['MENU','Menu'],['EXIT','Exit'],['EPG','EPG'],['INFO','Info'],
+    ['UP','▲ / CH+'],['LEFT','◀ / VOL−'],['OK','OK'],['RIGHT','▶ / VOL+'],['DOWN','▼ / CH−'],
+    ['REC','Rec'],['PLAY','Play'],['STOP','Stop'],['REW','Retro ◀◀'],['PAUSE','Pause'],['FFWD','Avance ▶▶'],
+    ['FAV','Fav'],['P_DOWN','P−'],['P_UP','P+'],
+    ['1','1'],['2','2'],['3','3'],['4','4'],['5','5'],['6','6'],['7','7'],['8','8'],['9','9'],['0','0']
+  ]
+};
+
+let MARCA = 'aimsat';
+let activeKey = null;
+const store = { aimsat:{}, digitalcom:{}, newland:{} }; // key -> {proto,...}
+
+const $ = s => document.querySelector(s);
+const logbox = $('#logbox');
+function log(m){ logbox.textContent += m + '\n'; logbox.scrollTop = logbox.scrollHeight; }
+
+/* ====== Render de la lista ====== */
+function valText(v){
+  if(!v) return ['pend','— pendiente —'];
+  if(v.proto === 'RAW') return ['raw','RAW · '+ (v.raw? v.raw.length:0) +' val'];
+  return ['', (v.proto||'?') + ' · ' + v.addr + '/' + v.cmd];
+}
+function render(){
+  const list = $('#list'); list.innerHTML = '';
+  const arr = MODELOS[MARCA];
+  arr.forEach(([key,label])=>{
+    const v = store[MARCA][key];
+    const [cls,txt] = valText(v);
+    const row = document.createElement('div');
+    row.className = 'btnrow' + (v?' done':'') + (key===activeKey?' active':'');
+    row.dataset.key = key;
+    row.innerHTML =
+      '<div class="lbl">'+label+'<small>'+key+'</small></div>'+
+      '<div class="val '+cls+'">'+txt+'</div>'+
+      '<button class="mini" data-clear="'+key+'">'+(v?'↻':'•')+'</button>';
+    list.appendChild(row);
+  });
+  const done = arr.filter(([k])=>store[MARCA][k]).length;
+  $('#prog').innerHTML = '<b>'+done+'</b>/'+arr.length+' capturados';
+}
+function setActive(key){ activeKey = key; render();
+  const el = document.querySelector('.btnrow.active'); if(el) el.scrollIntoView({block:'center',behavior:'smooth'}); }
+function nextPending(){
+  const arr = MODELOS[MARCA];
+  const start = arr.findIndex(([k])=>k===activeKey);
+  for(let i=1;i<=arr.length;i++){
+    const [k] = arr[(start+i)%arr.length];
+    if(!store[MARCA][k]) return k;
+  }
+  return null;
+}
+
+/* ====== Asignacion de captura entrante ====== */
+function assign(obj){
+  let key = activeKey || nextPending();
+  if(!key){ log('todo capturado; toca un botón para recapturar'); return; }
+  store[MARCA][key] = obj;
+  log('  -> '+key+' = '+JSON.stringify(obj).slice(0,60));
+  if($('#autoadv').checked){ const n = nextPending(); activeKey = n; }
+  render();
+  if(activeKey){ const el=document.querySelector('.btnrow.active'); if(el) el.scrollIntoView({block:'center',behavior:'smooth'}); }
+}
+
+/* ====== Web Serial ====== */
+let port=null, reader=null, keepReading=false;
+async function connect(){
+  if(!('serial' in navigator)){ $('#nowebserial').style.display='block'; return; }
+  try{
+    port = await navigator.serial.requestPort();
+    await port.open({ baudRate:115200 });
+    keepReading = true;
+    $('#dot').className='dot ok'; $('#conn-status').textContent='Conectado';
+    $('#btn-connect').textContent='Desconectar';
+    log('Puerto abierto a 115200');
+    readLoop();
+  }catch(e){ log('conexión cancelada/err: '+e.message); }
+}
+async function disconnect(){
+  keepReading=false;
+  try{ if(reader){ await reader.cancel(); reader.releaseLock(); } }catch(e){}
+  try{ if(port){ await port.close(); } }catch(e){}
+  port=null;
+  $('#dot').className='dot no'; $('#conn-status').textContent='Sin conectar';
+  $('#btn-connect').textContent='Conectar Arduino';
+  log('Desconectado');
+}
+async function readLoop(){
+  const dec = new TextDecoderStream();
+  port.readable.pipeTo(dec.writable).catch(()=>{});
+  reader = dec.readable.getReader();
+  let buf='';
+  try{
+    while(keepReading){
+      const {value,done} = await reader.read();
+      if(done) break;
+      buf += value;
+      let i;
+      while((i = buf.indexOf('\n')) >= 0){
+        const line = buf.slice(0,i).trim();
+        buf = buf.slice(i+1);
+        if(line) handleLine(line);
+      }
+    }
+  }catch(e){ log('lectura detenida: '+e.message); }
+}
+function handleLine(line){
+  if(line === 'READY'){ log('Arduino listo'); return; }
+  if(line.startsWith('IR ')){
+    try{ assign(JSON.parse(line.slice(3))); }
+    catch(e){ log('JSON malo: '+line); }
+  } else {
+    log(line);
+  }
+}
+
+/* ====== Export / Import ====== */
+function exportJSON(){
+  const arr = MODELOS[MARCA];
+  const out = { _meta:{ marca:MARCA, version:1, protocolo_esperado:'NEC',
+                        capturado_por:'', fecha:new Date().toISOString().slice(0,10) } };
+  arr.forEach(([key])=>{
+    out[key] = store[MARCA][key] || { proto:'', addr:'', cmd:'' };
+  });
+  const blob = new Blob([JSON.stringify(out,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'codigos_'+MARCA+'.json';
+  a.click(); URL.revokeObjectURL(a.href);
+  log('Exportado codigos_'+MARCA+'.json');
+}
+function importJSON(file){
+  const r = new FileReader();
+  r.onload = () => {
+    try{
+      const data = JSON.parse(r.result);
+      Object.keys(data).forEach(k=>{
+        if(k.startsWith('_')) return;
+        const e = data[k];
+        if(e && e.proto) store[MARCA][k] = e; // solo lo ya capturado
+      });
+      render(); log('Importado: continúa donde quedó');
+    }catch(e){ log('import inválido: '+e.message); }
+  };
+  r.readAsText(file);
+}
+
+/* ====== Eventos ====== */
+$('#tabs').addEventListener('click', e=>{
+  const t = e.target.closest('.tab'); if(!t) return;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on', x===t));
+  MARCA = t.dataset.marca; activeKey = null; render();
+});
+$('#list').addEventListener('click', e=>{
+  const clr = e.target.closest('[data-clear]');
+  if(clr){ e.stopPropagation(); const k=clr.dataset.clear; delete store[MARCA][k]; activeKey=k; render(); return; }
+  const row = e.target.closest('.btnrow'); if(row) setActive(row.dataset.key);
+});
+$('#btn-connect').addEventListener('click', ()=> port? disconnect() : connect());
+$('#btn-export').addEventListener('click', exportJSON);
+$('#btn-reset').addEventListener('click', ()=>{ if(confirm('¿Borrar capturas de '+MARCA+'?')){ store[MARCA]={}; activeKey=null; render(); } });
+$('#btn-import').addEventListener('click', ()=> $('#file').click());
+$('#file').addEventListener('change', e=>{ if(e.target.files[0]) importJSON(e.target.files[0]); e.target.value=''; });
+
+if(!('serial' in navigator)) $('#nowebserial').style.display='block';
+render();
+</script>
+</body>
+</html>

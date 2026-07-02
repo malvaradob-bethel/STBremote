@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Bethel Remote</title>
+<style>
+  :root{
+    --body:#15171a; --body2:#0c0d0f;
+    --btn:#2a2d31; --btn2:#1c1e21; --btn-edge:#0a0b0c;
+    --txt:#e7e7e7; --txt-dim:#9aa0a6;
+    --red:#d32f2f; --green:#2e9e4f; --yellow:#e3b505; --blue:#1f86d6;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; height:100%;}
+  body{
+    background:radial-gradient(120% 80% at 50% 0%, #2a2d31 0%, var(--body) 45%, var(--body2) 100%);
+    font-family:"Segoe UI",system-ui,Arial,sans-serif;
+    display:flex; flex-direction:column; align-items:center;
+    padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom);
+    color:var(--txt); min-height:100%;
+  }
+
+  /* selector de marca */
+  .tabs{width:100%; max-width:360px; display:grid; grid-template-columns:repeat(3,1fr);
+        gap:6px; margin:10px 0 4px;}
+  .tab{appearance:none; border:1px solid #2c2f33; background:#191b1e; color:var(--txt-dim);
+       font:600 13px/1 inherit; letter-spacing:.5px; padding:10px 4px; border-radius:10px; cursor:pointer;}
+  .tab.on{background:linear-gradient(180deg,#34383d,#212427); color:#fff; border-color:#454a50;}
+
+  /* barra de estado */
+  .bar{width:100%; max-width:360px; display:flex; align-items:center; gap:8px;
+       padding:6px 4px 8px; font-size:13px; color:var(--txt-dim);}
+  .dot{width:9px; height:9px; border-radius:50%; background:#666; flex:none;}
+  .dot.ok{background:#2ec26a;} .dot.no{background:var(--red);}
+  .bar .last{margin-left:auto; font-variant-numeric:tabular-nums; color:var(--txt);}
+
+  /* cuerpo */
+  .remote{width:100%; max-width:360px; background:linear-gradient(180deg,#1f2226,#141619);
+    border:1px solid #000; border-radius:30px; padding:18px 18px 12px;
+    box-shadow:0 18px 40px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.05);}
+  .skin{display:none;} .skin.active{display:block;}
+
+  .row{display:grid; gap:10px; margin-bottom:10px;}
+  .r4{grid-template-columns:repeat(4,1fr);}
+  .r3{grid-template-columns:repeat(3,1fr);}
+  .flex{display:flex; justify-content:space-between;}
+
+  .btn{appearance:none; border:none; cursor:pointer;
+    background:linear-gradient(180deg,var(--btn),var(--btn2)); color:var(--txt);
+    font-family:inherit; font-size:12px; font-weight:600; letter-spacing:.3px; text-transform:uppercase;
+    border-radius:11px; padding:10px 5px; min-height:42px;
+    box-shadow:0 2px 0 var(--btn-edge), 0 3px 6px rgba(0,0,0,.4);
+    transition:transform .04s, box-shadow .04s, filter .1s;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; line-height:1.05;}
+  .btn:active{transform:translateY(2px); box-shadow:0 0 0 var(--btn-edge),0 1px 3px rgba(0,0,0,.4);}
+  .btn.flash{filter:brightness(1.7);}
+  .btn small{font-size:9px; color:var(--txt-dim); font-weight:600;}
+
+  .pwr{background:linear-gradient(180deg,#e64a3b,var(--red)); box-shadow:0 2px 0 #7a1a13,0 3px 6px rgba(0,0,0,.4);}
+  .grn{background:linear-gradient(180deg,#3ab863,var(--green)); box-shadow:0 2px 0 #185c2d,0 3px 6px rgba(0,0,0,.4);}
+  .c-red{background:linear-gradient(180deg,#e64a3b,var(--red)); box-shadow:0 2px 0 #7a1a13,0 3px 6px rgba(0,0,0,.4);}
+  .c-green{background:linear-gradient(180deg,#3ab863,var(--green)); box-shadow:0 2px 0 #185c2d,0 3px 6px rgba(0,0,0,.4);}
+  .c-yellow{background:linear-gradient(180deg,#f1c530,var(--yellow)); color:#3a2e00; box-shadow:0 2px 0 #8a6e00,0 3px 6px rgba(0,0,0,.4);}
+  .c-blue{background:linear-gradient(180deg,#3a9ee6,var(--blue)); box-shadow:0 2px 0 #114e80,0 3px 6px rgba(0,0,0,.4);}
+  .wide{width:78px;}
+
+  /* d-pad */
+  .dpad{display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr);
+    gap:8px; width:196px; margin:4px auto 10px; aspect-ratio:1;}
+  .dpad .btn{min-height:0; height:100%; border-radius:14px; font-size:18px;}
+  .ok{border-radius:50%!important; font-size:15px!important; font-weight:700; background:linear-gradient(180deg,#34383d,#212427);}
+  .empty{visibility:hidden;}
+
+  /* bloque medio reutilizable */
+  .mid{display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:center; margin-bottom:10px;}
+  .pill{display:flex; flex-direction:column; align-items:center; gap:6px;
+    background:linear-gradient(180deg,#23262a,#16181b); border-radius:22px; padding:8px 6px;}
+  .pill .btn{width:100%; min-height:34px; border-radius:13px; font-size:18px; box-shadow:none;}
+  .pill .cap{font-size:10px; color:var(--txt-dim); letter-spacing:1px;}
+  .midc{display:flex; flex-direction:column; gap:10px;}
+  .round{width:52px; height:52px; border-radius:50%; font-size:11px; padding:0;}
+
+  .num .btn{font-size:17px; font-weight:700; min-height:46px;}
+  .brand{margin:6px auto 2px; width:150px; text-align:center; border:1px solid #2c2f33;
+    border-radius:8px; padding:7px; color:#cfcfcf; font-weight:700; letter-spacing:3px; font-size:14px;
+    background:linear-gradient(180deg,#202327,#15171a);}
+  @media (max-height:720px){ .btn{min-height:38px;} .dpad{width:170px;} }
+
+  /* ====== Newland: layout fiel ====== */
+  .nl-top{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:12px; align-items:center;}
+  .nl-top .sym{min-height:34px; border-radius:18px; font-size:16px;}
+  .nl-top .pwr{min-height:46px; border-radius:50%; width:46px; justify-self:end; font-size:20px;}
+  .nl-mid{display:flex; gap:10px; margin-bottom:12px; align-items:stretch;}
+  .nl-pad{flex:1; background:linear-gradient(180deg,#d7dbe0,#c2c7cd); border-radius:18px;
+    padding:10px; display:grid; grid-template-columns:repeat(3,1fr); gap:8px;}
+  .nl-pad .btn{background:linear-gradient(180deg,#fcfcfc,#dfe3e8); color:#1a1d21;
+    box-shadow:0 2px 0 #969ca3,0 3px 5px rgba(0,0,0,.3); font-size:16px; font-weight:700; text-transform:none;}
+  .nl-side{width:76px; display:flex; flex-direction:column; gap:8px;}
+  .nl-side .btn{flex:1; font-size:11px;}
+  .nl-side .pp{display:flex; gap:8px;}
+  .nl-side .pp .btn{flex:1; font-size:13px;}
+  .nl-colorlbl{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:2px 0 -4px; text-align:center;}
+  .nl-colorlbl span{font-size:11px; color:var(--txt-dim); letter-spacing:1px;}
+  .nl-nav{display:grid; grid-template-columns:repeat(3,1fr); gap:9px; width:230px; margin:6px auto 12px;}
+  .nl-nav .btn{min-height:0;}
+  .nl-nav .corner{width:52px; height:52px; border-radius:50%; justify-self:center; font-size:11px;}
+  .nl-nav .arrow{height:54px; border-radius:18px; font-size:18px; background:linear-gradient(180deg,#34383d,#23262a);}
+  .nl-nav .ok{width:60px; height:60px; justify-self:center;}
+  .nl-cap{font-size:10px; color:var(--txt-dim); letter-spacing:.5px;}
+</style>
+</head>
+<body>
+
+  <div class="tabs">
+    <button class="tab" data-marca="aimsat">Aimsat</button>
+    <button class="tab" data-marca="digitalcom">Digitalcom</button>
+    <button class="tab" data-marca="newland">Newland</button>
+  </div>
+
+  <div class="bar">
+    <span class="dot" id="ir-dot"></span>
+    <span id="ir-status">Comprobando IR…</span>
+    <span class="last" id="last-key">—</span>
+  </div>
+
+  <div class="remote" id="remote">
+
+    <!-- ============ AIMSAT ============ -->
+    <div class="skin" data-marca="aimsat">
+      <div class="row flex">
+        <button class="btn pwr wide" data-key="POWER">⏻</button>
+        <button class="btn wide" data-key="MUTE">🔇</button>
+      </div>
+      <div class="row r4">
+        <button class="btn c-red" data-key="PLAYER">Player</button>
+        <button class="btn c-green" data-key="V_FORMAT">V-Format</button>
+        <button class="btn c-yellow" data-key="ASPECT">Aspect</button>
+        <button class="btn c-blue" data-key="TIMER">Timer</button>
+      </div>
+      <div class="row r4">
+        <button class="btn" data-key="SUB">Sub</button>
+        <button class="btn" data-key="INFO">Info</button>
+        <button class="btn" data-key="AUDIO">Audio</button>
+        <button class="btn" data-key="TTX">Teltext</button>
+      </div>
+      <div class="row r4">
+        <button class="btn" data-key="PLAY">▶</button>
+        <button class="btn" data-key="STOP">■</button>
+        <button class="btn" data-key="PAUSE">❚❚</button>
+        <button class="btn" data-key="REC" style="color:#ff6b6b">●<small>Rec</small></button>
+      </div>
+      <div class="row r4">
+        <button class="btn" data-key="PREV">⏮</button>
+        <button class="btn" data-key="NEXT">⏭</button>
+        <button class="btn" data-key="REW">⏪</button>
+        <button class="btn" data-key="FFWD">⏩</button>
+      </div>
+      <div class="row flex">
+        <button class="btn wide" data-key="GOTO">Goto</button>
+        <button class="btn wide" data-key="FAV">Fav</button>
+      </div>
+      <div class="dpad">
+        <span class="empty"></span>
+        <button class="btn" data-key="UP">▲</button>
+        <span class="empty"></span>
+        <button class="btn" data-key="LEFT">◀</button>
+        <button class="btn ok" data-key="OK">OK</button>
+        <button class="btn" data-key="RIGHT">▶</button>
+        <span class="empty"></span>
+        <button class="btn" data-key="DOWN">▼</button>
+        <span class="empty"></span>
+      </div>
+      <div class="row flex">
+        <button class="btn wide" data-key="MENU">Menu</button>
+        <button class="btn wide" data-key="EXIT">Exit</button>
+      </div>
+      <div class="mid">
+        <div class="pill">
+          <button class="btn" data-key="VOL_UP">+</button>
+          <span class="cap">VOL</span>
+          <button class="btn" data-key="VOL_DOWN">−</button>
+        </div>
+        <div class="midc">
+          <button class="btn round" data-key="EPG">EPG</button>
+          <button class="btn round" data-key="TV_RADIO">TV/<br>Radio</button>
+        </div>
+        <div class="pill">
+          <button class="btn" data-key="PAGE_UP">⏶</button>
+          <span class="cap">PAGE</span>
+          <button class="btn" data-key="PAGE_DOWN">⏷</button>
+        </div>
+      </div>
+      <div class="row r3 num">
+        <button class="btn" data-key="1">1</button>
+        <button class="btn" data-key="2">2</button>
+        <button class="btn" data-key="3">3</button>
+        <button class="btn" data-key="4">4</button>
+        <button class="btn" data-key="5">5</button>
+        <button class="btn" data-key="6">6</button>
+        <button class="btn" data-key="7">7</button>
+        <button class="btn" data-key="8">8</button>
+        <button class="btn" data-key="9">9</button>
+        <button class="btn" data-key="ZOOM">Zoom</button>
+        <button class="btn" data-key="0">0</button>
+        <button class="btn" data-key="RECALL">Recall</button>
+      </div>
+      <div class="brand">AIMSAT</div>
+    </div>
+
+    <!-- ============ DIGITALCOM ============ -->
+    <div class="skin" data-marca="digitalcom">
+      <div class="row flex">
+        <button class="btn pwr wide" data-key="POWER">⏻</button>
+        <button class="btn grn wide" data-key="MUTE">🔇</button>
+      </div>
+      <div class="row r4">
+        <button class="btn c-red" data-key="RED">&nbsp;</button>
+        <button class="btn c-green" data-key="GREEN">&nbsp;</button>
+        <button class="btn c-yellow" data-key="YELLOW">&nbsp;</button>
+        <button class="btn c-blue" data-key="BLUE">&nbsp;</button>
+      </div>
+      <div class="row r4">
+        <button class="btn" data-key="SUB">Subt</button>
+        <button class="btn" data-key="TTX">TTX</button>
+        <button class="btn" data-key="ZOOM">Zoom</button>
+        <button class="btn" data-key="PVR">PVR</button>
+      </div>
+      <div class="row r4">
+        <button class="btn" data-key="FIND">Find</button>
+        <button class="btn" data-key="SLEEP">Sleep</button>
+        <button class="btn" data-key="GOTO">Goto</button>
+        <button class="btn" data-key="RECALL">Recall</button>
+      </div>
+      <div class="row r4">
+        <button class="btn" data-key="PLAY">▶</button>
+        <button class="btn" data-key="PAUSE">❚❚</button>
+        <button class="btn" data-key="STOP">■</button>
+        <button class="btn" data-key="REC" style="color:#ff6b6b">●<small>Rec</small></button>
+      </div>
+      <div class="row flex">
+        <button class="btn wide" data-key="MENU">Menu</button>
+        <button class="btn wide" data-key="EXIT">Exit</button>
+      </div>
+      <div class="dpad">
+        <span class="empty"></span>
+        <button class="btn" data-key="UP">▲</button>
+        <span class="empty"></span>
+        <button class="btn" data-key="LEFT">◀</button>
+        <button class="btn ok" data-key="OK">OK</button>
+        <button class="btn" data-key="RIGHT">▶</button>
+        <span class="empty"></span>
+        <button class="btn" data-key="DOWN">▼</button>
+        <span class="empty"></span>
+      </div>
+      <div class="row flex">
+        <button class="btn wide" data-key="EPG">EPG</button>
+        <button class="btn wide" data-key="INFO">Info</button>
+      </div>
+      <div class="mid">
+        <div class="pill">
+          <button class="btn" data-key="REW">⏪</button>
+          <button class="btn" data-key="FFWD">⏩</button>
+        </div>
+        <div class="midc">
+          <button class="btn round" data-key="TV_RADIO">TV/<br>Ra</button>
+          <button class="btn round" data-key="SAT">Sat</button>
+        </div>
+        <div class="pill">
+          <button class="btn" data-key="PREV">⏮</button>
+          <button class="btn" data-key="NEXT">⏭</button>
+        </div>
+      </div>
+      <div class="row r3 num">
+        <button class="btn" data-key="1">1</button>
+        <button class="btn" data-key="2">2</button>
+        <button class="btn" data-key="3">3</button>
+        <button class="btn" data-key="4">4</button>
+        <button class="btn" data-key="5">5</button>
+        <button class="btn" data-key="6">6</button>
+        <button class="btn" data-key="7">7</button>
+        <button class="btn" data-key="8">8</button>
+        <button class="btn" data-key="9">9</button>
+        <button class="btn" data-key="FAV">Fav</button>
+        <button class="btn" data-key="0">0</button>
+        <button class="btn" data-key="AUDIO">Audio</button>
+      </div>
+      <div class="brand">DIGITALCOM</div>
+    </div>
+
+    <!-- ============ NEWLAND ============ -->
+    <div class="skin" data-marca="newland">
+
+      <!-- simbolos + power -->
+      <div class="nl-top">
+        <button class="btn sym" data-key="TOP_1">⟲<small>¿?</small></button>
+        <button class="btn sym" data-key="TOP_2">▤<small>¿?</small></button>
+        <button class="btn sym" data-key="MUTE">🔇</button>
+        <button class="btn pwr" data-key="POWER">⏻</button>
+      </div>
+
+      <!-- teclado en panel claro + columna lateral -->
+      <div class="nl-mid">
+        <div class="nl-pad">
+          <button class="btn" data-key="1">1</button>
+          <button class="btn" data-key="2">2</button>
+          <button class="btn" data-key="3">3</button>
+          <button class="btn" data-key="4">4</button>
+          <button class="btn" data-key="5">5</button>
+          <button class="btn" data-key="6">6</button>
+          <button class="btn" data-key="7">7</button>
+          <button class="btn" data-key="8">8</button>
+          <button class="btn" data-key="9">9</button>
+          <button class="btn" data-key="FAV" style="font-size:12px">Fav</button>
+          <button class="btn" data-key="0">0</button>
+          <span></span>
+        </div>
+        <div class="nl-side">
+          <button class="btn" data-key="TRACK">Track</button>
+          <button class="btn" data-key="SUB">Sub-T</button>
+          <button class="btn" data-key="TTX">TTX</button>
+          <div class="pp">
+            <button class="btn" data-key="P_DOWN">P−</button>
+            <button class="btn" data-key="P_UP">P+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- fila de color con etiquetas F1/F2/F3/SET -->
+      <div class="nl-colorlbl"><span>F1</span><span>F2</span><span>F3</span><span>SET</span></div>
+      <div class="row r4">
+        <button class="btn c-red" data-key="F1">&nbsp;</button>
+        <button class="btn c-green" data-key="F2">&nbsp;</button>
+        <button class="btn c-yellow" data-key="F3">&nbsp;</button>
+        <button class="btn c-blue" data-key="SET">&nbsp;</button>
+      </div>
+
+      <!-- navegacion (flechas dobles CH/VOL) -->
+      <div class="nl-nav">
+        <button class="btn corner" data-key="MENU">Menu</button>
+        <button class="btn arrow" data-key="UP">▲<small>CH+</small></button>
+        <button class="btn corner" data-key="EXIT">Exit</button>
+        <button class="btn arrow" data-key="LEFT">◀<small>VOL−</small></button>
+        <button class="btn ok" data-key="OK">OK</button>
+        <button class="btn arrow" data-key="RIGHT">▶<small>VOL+</small></button>
+        <button class="btn corner" data-key="EPG">EPG</button>
+        <button class="btn arrow" data-key="DOWN">▼<small>CH−</small></button>
+        <button class="btn corner" data-key="INFO">Info</button>
+      </div>
+
+      <!-- PVR -->
+      <div class="nl-cap" style="text-align:center; margin-bottom:4px">PVR</div>
+      <div class="row r3">
+        <button class="btn" data-key="REC" style="color:#ff6b6b">●<small>Rec</small></button>
+        <button class="btn" data-key="PLAY">▶</button>
+        <button class="btn" data-key="STOP">■</button>
+      </div>
+      <div class="row r3">
+        <button class="btn" data-key="REW">⏪</button>
+        <button class="btn" data-key="PAUSE">❚❚</button>
+        <button class="btn" data-key="FFWD">⏩</button>
+      </div>
+
+      <div class="brand">NEWLAND</div>
+    </div>
+
+  </div>
+
+  <script src="ir-engine.js"></script>
+  <script>
+    const MARCAS = ['aimsat','digitalcom','newland'];
+    let MARCA = 'aimsat';
+
+    function saveBrand(m){ try{ localStorage.setItem('bethel_marca', m); }catch(e){} }
+    function loadBrand(){ try{ return localStorage.getItem('bethel_marca'); }catch(e){ return null; } }
+
+    function setBrand(m){
+      if(MARCAS.indexOf(m) < 0) m = 'aimsat';
+      MARCA = m;
+      document.querySelectorAll('.skin').forEach(s => s.classList.toggle('active', s.dataset.marca === m));
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.marca === m));
+      document.getElementById('last-key').textContent = '—';
+      saveBrand(m);
+    }
+
+    async function checkIr(){
+      const dot = document.getElementById('ir-dot');
+      const st  = document.getElementById('ir-status');
+      try{
+        const native = window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform();
+        if(native){
+          const blaster = window.Capacitor.registerPlugin('IrBlaster');
+          const r = await blaster.hasIrEmitter();
+          if(r && r.value){ dot.className='dot ok'; st.textContent='IR listo'; }
+          else { dot.className='dot no'; st.textContent='Sin emisor IR'; }
+        } else { dot.className='dot'; st.textContent='Modo navegador (IR simulado)'; }
+      }catch(e){ dot.className='dot no'; st.textContent='IR no disponible'; }
+    }
+
+    async function init(){
+      for(const m of MARCAS){ try{ await IRBethel.cargarMarca(m); }catch(e){ console.error('no carga', m, e); } }
+      await checkIr();
+      setBrand(loadBrand() || 'aimsat');
+    }
+
+    // conmutador de marca
+    document.querySelector('.tabs').addEventListener('click', function(ev){
+      const t = ev.target.closest('.tab'); if(!t) return;
+      setBrand(t.dataset.marca);
+    });
+
+    // disparo de tecla (delegado, solo skin activa visible)
+    document.getElementById('remote').addEventListener('click', function(ev){
+      const btn = ev.target.closest('[data-key]'); if(!btn) return;
+      const key = btn.dataset.key;
+      btn.classList.add('flash'); setTimeout(()=>btn.classList.remove('flash'), 120);
+      document.getElementById('last-key').textContent = key;
+      if(navigator.vibrate) navigator.vibrate(15);
+      IRBethel.pressKey(MARCA, key);
+    });
+
+    init();
+  </script>
+</body>
+</html>
