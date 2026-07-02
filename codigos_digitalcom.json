@@ -1,0 +1,234 @@
+{
+  "0": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x46"
+  },
+  "1": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0xD"
+  },
+  "2": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x9"
+  },
+  "3": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x5"
+  },
+  "4": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x1"
+  },
+  "5": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x4F"
+  },
+  "6": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x4B"
+  },
+  "7": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x47"
+  },
+  "8": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x43"
+  },
+  "9": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x4A"
+  },
+  "_meta": {
+    "marca": "digitalcom",
+    "version": 1,
+    "protocolo_esperado": "NEC",
+    "capturado_por": "",
+    "fecha": "2026-07-02"
+  },
+  "POWER": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0xC"
+  },
+  "MUTE": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x0"
+  },
+  "RED": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x50"
+  },
+  "GREEN": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x54"
+  },
+  "YELLOW": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x58"
+  },
+  "BLUE": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x5C"
+  },
+  "SUB": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x49"
+  },
+  "TTX": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x45"
+  },
+  "ZOOM": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0xA"
+  },
+  "PVR": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x5F"
+  },
+  "FIND": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x18"
+  },
+  "SLEEP": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x14"
+  },
+  "GOTO": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x4E"
+  },
+  "RECALL": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x42"
+  },
+  "PLAY": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x51"
+  },
+  "PAUSE": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x55"
+  },
+  "STOP": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x59"
+  },
+  "REC": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x5D"
+  },
+  "MENU": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0xB"
+  },
+  "EXIT": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x7"
+  },
+  "UP": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x44"
+  },
+  "LEFT": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x4C"
+  },
+  "OK": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x6"
+  },
+  "RIGHT": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x40"
+  },
+  "DOWN": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x48"
+  },
+  "EPG": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x8"
+  },
+  "INFO": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x41"
+  },
+  "REW": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x52"
+  },
+  "FFWD": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x56"
+  },
+  "TV_RADIO": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x3"
+  },
+  "SAT": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x4"
+  },
+  "PREV": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x5A"
+  },
+  "NEXT": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x5E"
+  },
+  "FAV": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0x4D"
+  },
+  "AUDIO": {
+    "proto": "NEC",
+    "addr": "0x0",
+    "cmd": "0xF"
+  }
+}

@@ -1,0 +1,204 @@
+{
+  "0": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x4D"
+  },
+  "1": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x42"
+  },
+  "2": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x41"
+  },
+  "3": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x40"
+  },
+  "4": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x46"
+  },
+  "5": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x45"
+  },
+  "6": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x44"
+  },
+  "7": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x4A"
+  },
+  "8": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x49"
+  },
+  "9": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x48"
+  },
+  "_meta": {
+    "marca": "newland",
+    "version": 1,
+    "protocolo_esperado": "NEC",
+    "capturado_por": "",
+    "fecha": "2026-07-02"
+  },
+  "POWER": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x47"
+  },
+  "TOP_1": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x58"
+  },
+  "TOP_2": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x51"
+  },
+  "MUTE": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x43"
+  },
+  "TRACK": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x4E"
+  },
+  "SUB": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x54"
+  },
+  "TTX": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x50"
+  },
+  "F1": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x1F"
+  },
+  "F2": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x1B"
+  },
+  "F3": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x17"
+  },
+  "SET": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x13"
+  },
+  "MENU": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x1E"
+  },
+  "EXIT": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x12"
+  },
+  "EPG": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x1A"
+  },
+  "INFO": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x19"
+  },
+  "UP": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x14"
+  },
+  "LEFT": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x1D"
+  },
+  "OK": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x15"
+  },
+  "RIGHT": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x11"
+  },
+  "DOWN": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x1D"
+  },
+  "REC": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x4B"
+  },
+  "PLAY": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x5C"
+  },
+  "STOP": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x18"
+  },
+  "REW": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x1C"
+  },
+  "PAUSE": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x5D"
+  },
+  "FFWD": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x10"
+  },
+  "FAV": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x4C"
+  },
+  "P_DOWN": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x55"
+  },
+  "P_UP": {
+    "proto": "NEC",
+    "addr": "0xE608",
+    "cmd": "0x59"
+  }
+}

@@ -1,0 +1,234 @@
+{
+  "0": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0xC"
+  },
+  "1": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x54"
+  },
+  "2": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x16"
+  },
+  "3": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x15"
+  },
+  "4": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x50"
+  },
+  "5": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x12"
+  },
+  "6": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x11"
+  },
+  "7": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x4C"
+  },
+  "8": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0xE"
+  },
+  "9": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0xD"
+  },
+  "_meta": {
+    "marca": "aimsat",
+    "version": 1,
+    "protocolo_esperado": "NEC",
+    "capturado_por": "",
+    "fecha": "2026-07-02"
+  },
+  "POWER": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x1C"
+  },
+  "MUTE": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x8"
+  },
+  "PLAYER": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x56"
+  },
+  "V_FORMAT": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x57"
+  },
+  "ASPECT": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x1F"
+  },
+  "TIMER": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x5B"
+  },
+  "SUB": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x55"
+  },
+  "INFO": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x5E"
+  },
+  "AUDIO": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x51"
+  },
+  "TTX": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x59"
+  },
+  "PLAY": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x5A"
+  },
+  "STOP": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x52"
+  },
+  "PAUSE": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x5D"
+  },
+  "REC": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x5C"
+  },
+  "PREV": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x1"
+  },
+  "NEXT": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x5F"
+  },
+  "REW": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x19"
+  },
+  "FFWD": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x58"
+  },
+  "GOTO": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x18"
+  },
+  "FAV": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x17"
+  },
+  "UP": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x1A"
+  },
+  "LEFT": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x47"
+  },
+  "OK": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x6"
+  },
+  "RIGHT": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x7"
+  },
+  "DOWN": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x48"
+  },
+  "MENU": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x49"
+  },
+  "EXIT": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0xA"
+  },
+  "VOL_UP": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x4B"
+  },
+  "VOL_DOWN": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x4F"
+  },
+  "EPG": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x3"
+  },
+  "TV_RADIO": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x42"
+  },
+  "PAGE_UP": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x9"
+  },
+  "PAGE_DOWN": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x5"
+  },
+  "ZOOM": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x41"
+  },
+  "RECALL": {
+    "proto": "NEC",
+    "addr": "0xB0",
+    "cmd": "0x10"
+  }
+}
